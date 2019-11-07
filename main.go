@@ -10,7 +10,7 @@ import (
   "net/http"
   "flag"
 
-  "gitlab.com/egeneralov/parity/external"
+  "github.com/egeneralov/parity/external"
 )
 
 
