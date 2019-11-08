@@ -8,8 +8,8 @@ ENV \
   GOOS=linux \
   GOARCH=amd64
 
-WORKDIR /go/src/gitlab.com/egeneralov/parity
-ADD go.mod go.sum /go/src/gitlab.com/egeneralov/parity/
+WORKDIR /go/src/github.com/egeneralov/parity
+ADD go.mod go.sum /go/src/github.com/egeneralov/parity/
 RUN go mod download
 
 ADD . .

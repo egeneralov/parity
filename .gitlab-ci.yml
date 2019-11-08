@@ -4,7 +4,7 @@ stages:
 variables:
   CGO_ENABLED: 0
   GOARCH: amd64
-  REPO_NAME: gitlab.com/egeneralov/parity
+  REPO_NAME: github.com/egeneralov/parity
 
 .build: &build
   image: golang:1.13-alpine
