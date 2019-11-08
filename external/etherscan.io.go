@@ -106,7 +106,9 @@ func GetEthHeightFromEtherscanIo () (int, string) {
   req.Header.Set("Cache-Control", "no-cache")
   
   resp, err := http.DefaultClient.Do(req)
-  if err != nil { panic(err) }
+  if err != nil {
+    return 0, fmt.Sprintf(`error: GetEthHeightFromEtherscanIo: http.DefaultClient.Do err: '%s'`, err)
+  }
   defer resp.Body.Close()
   body, err := ioutil.ReadAll(resp.Body)
   if err != nil {
@@ -114,7 +116,9 @@ func GetEthHeightFromEtherscanIo () (int, string) {
   }
   
   doc, err := htmlquery.Parse(strings.NewReader(string(body)))
-  if err != nil { panic(err) }
+  if err != nil {
+    return 0, fmt.Sprintf(`error: GetEthHeightFromEtherscanIo: htmlquery.Parse err: '%s'`, err)
+  }
 
   list, err := htmlquery.QueryAll(doc, `//span[@id="lastblock"]`)
   if err != nil {

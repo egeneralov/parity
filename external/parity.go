@@ -62,7 +62,9 @@ func GetHeightFromParityRpc(url string) (int, string) {
   
   var v interface{}
   err = json.Unmarshal(body, &v)
-  if err != nil { panic(err) }
+  if err != nil {
+    return 0, fmt.Sprintf(`error: GetHeightFromParityRpc: json.Unmarshal, err: '%s'`, err)
+  }
   mm := v.(map[string]interface{})
   vvv := fmt.Sprintf(`%s`, mm["result"])
   vvvv := hex2int(vvv)
