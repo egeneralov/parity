@@ -64,7 +64,7 @@ func main() {
       }
       
       // write response body
-      fmt.Fprintf(w, message)
+      fmt.Fprint(w, message)
     })
 
     http.HandleFunc("/metrics", func (w http.ResponseWriter, r *http.Request) {
@@ -103,7 +103,7 @@ func main() {
       )
       
       // write response body
-      fmt.Fprintf(w, message)
+      fmt.Fprint(w, message)
     })
     
     log.Printf(`Starting web server: %s`, HttpBindTo)
