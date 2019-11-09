@@ -59,7 +59,11 @@ func GetEthHeightFromEtherscanIoWebsocket () (int, string) {
   // fmt.Println(string(srcMessage))
   
   // request block subscription
-  c.WriteMessage(websocket.TextMessage, []byte(`{"event": "gs"}`))
+  err = c.WriteMessage(websocket.TextMessage, []byte(`{"event": "gs"}`))
+  if err != nil {
+    return 0, fmt.Sprintf("error: GetEthHeightFromEtherscanIoWebsocket: Failed to write the message to ws, err: '%s'", err)
+  }
+
   
   // message with good payload
   _, srcMessage, err = c.ReadMessage()
