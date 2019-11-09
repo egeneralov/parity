@@ -37,7 +37,7 @@ func GetHeightFromParityRpc(url string) (int, string) {
   
   payloadBytes, err := json.Marshal(payload)
   if err != nil {
-    return 0, fmt.Sprintf(`error: GetHeightFromParityRpc: Failed to json.Marshal(%s): %s`, payload, err)
+    return 0, fmt.Sprintf(`error: GetHeightFromParityRpc: Failed to json.Marshal(%v): %s`, payload, err)
   }
   payloadReader := bytes.NewReader(payloadBytes)
   
