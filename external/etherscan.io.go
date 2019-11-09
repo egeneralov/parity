@@ -46,10 +46,10 @@ func GetEthHeightFromEtherscanIoWebsocket () (int, string) {
   u := url.URL{Scheme: "wss", Host: "etherscan.io:443", Path: "/wshandler"}
   // log.Printf("connecting to %s", u.String())
   c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-  defer c.Close()
   if err != nil {
     return 0, fmt.Sprintf(`error: GetEthHeightFromEtherscanIoWebsocket: Failed to get url: '%s', err: '%s'`, u.String(), err)
   }
+  defer c.Close()
   
   // welcome msg
   _, srcMessage, err := c.ReadMessage()
