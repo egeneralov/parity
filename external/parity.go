@@ -63,8 +63,6 @@ func GetHeightFromParityRpc(url string) (int, string) {
         return 0, fmt.Sprintf(`error: GetHeightFromParityRpc: json.Unmarshal, err: '%s'`, err)
     }
     mm := v.(map[string]interface{})
-    vvv := fmt.Sprintf(`%s`, mm["result"])
-    vvvv := hex2int(vvv)
 
-    return int(vvvv), ""
+    return hex2int(mm["result"].(string)), ""
 }
