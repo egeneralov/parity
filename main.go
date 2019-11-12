@@ -34,7 +34,7 @@ var (
 
 
 func main() {
-  flag.StringVar(&WorkingMode, "mode", "parity-eth", "working mode [parity-eth, parity-etc, xmc]")
+  flag.StringVar(&WorkingMode, "mode", "parity-eth", "working mode [parity-eth, parity-etc, xmc, xmr]")
   flag.StringVar(&HttpBindTo, "bind", "0.0.0.0:8090", "golang web server bind to")
   flag.StringVar(&LocalNodeRpcUrl, "rpcurl", "http://127.0.0.1:7345", "url to rpc server (default is parity rpc url)")
   flag.IntVar(&AllowedBlockLag, "lag", 5, "allowed lag between explorer and local node")
@@ -124,6 +124,8 @@ func main() {
           PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
         case "xmc":
           PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl)
+        case "xmr":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl)
       }
       
       if errorString != "" {
@@ -206,6 +208,17 @@ func main() {
         } else {
           RemoteLastBlock = PossibleRemoteLastBlock
           log.Println(`GetXmcHeightFromMoneroClassicOrg:`, RemoteLastBlock)
+        }
+      
+      case "xmr":
+        time.Sleep(time.Second)
+        
+        PossibleRemoteLastBlock, errorString = external.GetXmrHeightFromMoneroBlocsInfo()
+        if errorString != "" {
+          log.Printf(`RemoteHeight request error: %s`, errorString)
+        } else {
+          RemoteLastBlock = PossibleRemoteLastBlock
+          log.Println(`GetXmrHeightFromMoneroBlocsInfo:`, RemoteLastBlock)
         }
     } // switch
   } // for
