@@ -34,11 +34,11 @@ var (
 
 
 func main() {
-  flag.StringVar(&WorkingMode, "mode", "parity-eth", "working mode [parity-eth, parity-etc]")
+  flag.StringVar(&WorkingMode, "mode", "parity-eth", "working mode [parity-eth, parity-etc, xmc]")
   flag.StringVar(&HttpBindTo, "bind", "0.0.0.0:8090", "golang web server bind to")
   flag.StringVar(&LocalNodeRpcUrl, "rpcurl", "http://127.0.0.1:7345", "url to rpc server (default is parity rpc url)")
   flag.IntVar(&AllowedBlockLag, "lag", 5, "allowed lag between explorer and local node")
-  flag.IntVar(&RefreshLocalState, "refresh", 2, "refresh local state every X seconds")
+  flag.IntVar(&RefreshLocalState, "refresh", 5, "refresh local state every X seconds")
   flag.Parse()
   
   log.Printf(`WorkingMode: %s`, WorkingMode)
@@ -72,23 +72,6 @@ func main() {
     http.HandleFunc("/metrics", func (w http.ResponseWriter, r *http.Request) {
       log.Printf("handle http request at url '%s'", r.URL)
       message := fmt.Sprintf("# HELP AllowedBlockLag AllowedBlockLag\n# TYPE AllowedBlockLag gauge\nAllowedBlockLag %d\n", AllowedBlockLag)
-      
-/*
-      message := fmt.Sprintf("# HELP LocalLastBlock LocalLastBlock\n# TYPE LocalLastBlock gauge\nLocalLastBlock %d\n", LocalLastBlock)
-      message = fmt.Sprintf("%s# HELP RemoteLastBlock RemoteLastBlock\n# TYPE RemoteLastBlock gauge\nRemoteLastBlock{WorkingMode=\"%s\"} %d\n", message, WorkingMode, RemoteLastBlock)
-      message = fmt.Sprintf("%s# HELP AllowedBlockLag AllowedBlockLag\n# TYPE AllowedBlockLag gauge\nAllowedBlockLag %d\n", message, AllowedBlockLag)
-      message = fmt.Sprintf("%s# HELP diff diff\n# TYPE diff gauge\ndiff %d\n", message, RemoteLastBlock - LocalLastBlock)
-      switch WorkingMode {
-        default:
-          log.Printf(`Invalid WorkingMode: %s`, WorkingMode)
-          os.Exit(1)
-        
-        case "parity-eth":
-          message = fmt.Sprintf("%s# HELP GetEthHeightFromEtherscanIo GetEthHeightFromEtherscanIo\n# TYPE GetEthHeightFromEtherscanIo gauge\nGetEthHeightFromEtherscanIo %d\n", message, RemoteLastBlock)
-        case "parity-etc":
-          message = fmt.Sprintf("%s# HELP GetEtcHeightFromGastrackerIo GetEtcHeightFromGastrackerIo\n# TYPE GetEtcHeightFromGastrackerIo gauge\nGetEtcHeightFromGastrackerIo %d\n", message, RemoteLastBlock)
-      }
-*/
       
       message = fmt.Sprintf(
         "%s# HELP CurrentHeight CurrentHeight\n# TYPE CurrentHeight gauge\nCurrentHeight{type=\"remote\", daemon=\"%s\"} %d\n",
@@ -130,7 +113,18 @@ func main() {
   go func() {
     for {
       
-      PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
+      
+      switch WorkingMode {
+        default:
+          log.Printf(`Invalid WorkingMode: %s`, WorkingMode)
+          os.Exit(1)
+        case "parity-eth":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
+        case "parity-etc":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
+        case "xmc":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl)
+      }
       
       if errorString != "" {
         log.Printf(`RemoteHeight request error: %s`, errorString)
@@ -203,6 +197,16 @@ func main() {
           log.Println(`GetEtcHeightFromGastrackerIo:`, RemoteLastBlock)
         }
       
+      case "xmc":
+        time.Sleep(time.Second)
+        
+        PossibleRemoteLastBlock, errorString = external.GetXmcHeightFromMoneroClassicOrg()
+        if errorString != "" {
+          log.Printf(`RemoteHeight request error: %s`, errorString)
+        } else {
+          RemoteLastBlock = PossibleRemoteLastBlock
+          log.Println(`GetXmcHeightFromMoneroClassicOrg:`, RemoteLastBlock)
+        }
     } // switch
   } // for
 } // func main
