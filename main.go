@@ -19,6 +19,7 @@ var (
   WorkingMode = "parity-eth"
   LocalNodeRpcUrl = "http://127.0.0.1:7345"
   AllowedBlockLag = 5
+  RefreshLocalState = 2
   
   // logic
   RemoteLastBlock = 0
@@ -37,6 +38,7 @@ func main() {
   flag.StringVar(&HttpBindTo, "bind", "0.0.0.0:8090", "golang web server bind to")
   flag.StringVar(&LocalNodeRpcUrl, "rpcurl", "http://127.0.0.1:7345", "url to rpc server (default is parity rpc url)")
   flag.IntVar(&AllowedBlockLag, "lag", 5, "allowed lag between explorer and local node")
+  flag.IntVar(&RefreshLocalState, "refresh", 2, "refresh local state every X seconds")
   flag.Parse()
   
   log.Printf(`WorkingMode: %s`, WorkingMode)
@@ -137,7 +139,7 @@ func main() {
         log.Println(`LocalLastBlock:`, LocalLastBlock)
       }
       
-      time.Sleep(time.Second)
+      time.Sleep(time.Second * time.Duration(RefreshLocalState))
     }
   }()
   
