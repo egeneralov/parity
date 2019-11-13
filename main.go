@@ -73,19 +73,23 @@ func main() {
       log.Printf("handle http request at url '%s'", r.URL)
       message := fmt.Sprintf("# HELP AllowedBlockLag AllowedBlockLag\n# TYPE AllowedBlockLag gauge\nAllowedBlockLag %d\n", AllowedBlockLag)
       
-      message = fmt.Sprintf(
-        "%s# HELP CurrentHeight CurrentHeight\n# TYPE CurrentHeight gauge\nCurrentHeight{type=\"remote\", daemon=\"%s\"} %d\n",
-        message,
-        WorkingMode,
-        RemoteLastBlock,
-      )
+      if RemoteLastBlock != 0 {
+        message = fmt.Sprintf(
+          "%s# HELP CurrentHeight CurrentHeight\n# TYPE CurrentHeight gauge\nCurrentHeight{type=\"remote\", daemon=\"%s\"} %d\n",
+          message,
+          WorkingMode,
+          RemoteLastBlock,
+        )
+      }
       
-      message = fmt.Sprintf(
-        "%s# HELP CurrentHeight CurrentHeight\n# TYPE CurrentHeight gauge\nCurrentHeight{type=\"local\", daemon=\"%s\"} %d\n",
-        message,
-        WorkingMode,
-        LocalLastBlock,
-      )
+      if RemoteLastBlock != 0 {
+        message = fmt.Sprintf(
+          "%s# HELP CurrentHeight CurrentHeight\n# TYPE CurrentHeight gauge\nCurrentHeight{type=\"local\", daemon=\"%s\"} %d\n",
+          message,
+          WorkingMode,
+          LocalLastBlock,
+        )
+      }
       
       // write response body
       fmt.Fprintf(w, message)
