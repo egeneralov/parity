@@ -34,7 +34,7 @@ var (
 
 
 func main() {
-  flag.StringVar(&WorkingMode, "mode", "parity-eth", "working mode [parity-eth, parity-etc, xmc, xmr]")
+  flag.StringVar(&WorkingMode, "mode", "parity-eth", "working mode [parity-eth, parity-etc, xmc, xmr, btg]")
   flag.StringVar(&HttpBindTo, "bind", "0.0.0.0:8090", "golang web server bind to")
   flag.StringVar(&LocalNodeRpcUrl, "rpcurl", "http://127.0.0.1:7345", "url to rpc server (default is parity rpc url)")
   flag.IntVar(&AllowedBlockLag, "lag", 5, "allowed lag between explorer and local node")
@@ -122,6 +122,8 @@ func main() {
         default:
           log.Printf(`Invalid WorkingMode: %s`, WorkingMode)
           os.Exit(1)
+        case "btg":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromBtgRpc(LocalNodeRpcUrl)
         case "parity-eth":
           PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
         case "parity-etc":
@@ -181,6 +183,17 @@ func main() {
         log.Printf(`Invalid WorkingMode: %s`, WorkingMode)
         os.Exit(1)
       
+      case "btg":
+        time.Sleep(time.Second)
+        
+        PossibleRemoteLastBlock, errorString = external.GetHeightFromExplorerBitcoingoldOrg()
+        if errorString != "" {
+          log.Printf(`RemoteHeight request error: %s`, errorString)
+        } else {
+          RemoteLastBlock = PossibleRemoteLastBlock
+          log.Println(`GetHeightFromExplorerBitcoingoldOrg:`, RemoteLastBlock)
+        }
+            
       case "parity-eth":
         time.Sleep(time.Second)
         
