@@ -33,6 +33,10 @@ func GetXmcHeightFromMoneroClassicOrg () (int, string) {
     return 0, fmt.Sprintf(`error: GetXmcHeightFromMoneroClassicOrg: htmlquery.QueryAll err: '%s'`, err)
   }
   
+  if len(list) == 0 {
+    return 0, fmt.Sprintf(`error: GetXmcHeightFromMoneroClassicOrg: list is empty`)
+  }
+  
   str := htmlquery.InnerText(list[0])
   
   LastBlock, err := strconv.Atoi(str)
