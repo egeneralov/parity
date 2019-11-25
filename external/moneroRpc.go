@@ -13,8 +13,8 @@ type moneroRpcAnswer struct {
 	Untrusted bool   `json:"untrusted"`
 }
 
-func GetHeightFromMoneroRpc(url string) (int, string) {
-  resp, err := http.Get(url + "/get_height")
+func GetHeightFromMoneroRpc(url string, suffix string) (int, string) {
+  resp, err := http.Get(url + suffix)
   if err != nil {
     return 0, fmt.Sprintf(`error: GetHeightFromMoneroRpc: Failed to run get request %s`, err)
   }

@@ -82,7 +82,7 @@ func main() {
         )
       }
       
-      if RemoteLastBlock != 0 {
+      if LocalLastBlock != 0 {
         message = fmt.Sprintf(
           "%s# HELP CurrentHeight CurrentHeight\n# TYPE CurrentHeight gauge\nCurrentHeight{type=\"local\", daemon=\"%s\"} %d\n",
           message,
@@ -129,9 +129,9 @@ func main() {
         case "parity-etc":
           PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
         case "xmc":
-          PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl)
+          PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl, "/getheight")
         case "xmr":
-          PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl)
+          PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl, "/get_height")
       }
       
       if errorString != "" {
