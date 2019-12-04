@@ -219,7 +219,8 @@ func main() {
       case "xmc":
         time.Sleep(time.Second)
         
-        PossibleRemoteLastBlock, errorString = external.GetXmcHeightFromMoneroClassicOrg()
+//         PossibleRemoteLastBlock, errorString = external.GetXmcHeightFromMoneroClassicOrg()
+        PossibleRemoteLastBlock, errorString = external.GetHeightFromXmcFairHashAnswer()
         if errorString != "" {
           log.Printf(`RemoteHeight request error: %s`, errorString)
         } else {
