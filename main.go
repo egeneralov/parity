@@ -25,6 +25,7 @@ var (
   RemoteLastBlock = 0
   LocalLastBlock = 0
   isReady = false
+  notReadyWithoutExternal = true
   
   // __system__
   errorString = ""
@@ -39,6 +40,7 @@ func main() {
   flag.StringVar(&LocalNodeRpcUrl, "rpcurl", "http://127.0.0.1:7345", "url to rpc server (default is parity rpc url)")
   flag.IntVar(&AllowedBlockLag, "lag", 5, "allowed lag between explorer and local node")
   flag.IntVar(&RefreshLocalState, "refresh", 5, "refresh local state every X seconds")
+  flag.BoolVar(&notReadyWithoutExternal, "notReadyWithoutExternal", true, "not ready without external explorer answer")
   flag.Parse()
   
   log.Printf(`WorkingMode: %s`, WorkingMode)
@@ -150,11 +152,12 @@ func main() {
   go func() {
     for {
       time.Sleep(time.Second)
-      
-      if (RemoteLastBlock == 0) {
-        isReady = false
-        log.Println("isReady: false because: RemoteLastBlock = 0")
-        continue
+      if notReadyWithoutExternal {
+        if (RemoteLastBlock == 0) {
+          isReady = false
+          log.Println("isReady: false because: RemoteLastBlock = 0")
+          continue
+        }
       }
       
       if (LocalLastBlock == 0) {
