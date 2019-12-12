@@ -31,6 +31,8 @@ var (
   errorString = ""
   PossibleLocalLastBlock = 0
   PossibleRemoteLastBlock = 0
+  rpcUser string
+  rpcPassword string
 )
 
 
@@ -41,6 +43,9 @@ func main() {
   flag.IntVar(&AllowedBlockLag, "lag", 5, "allowed lag between explorer and local node")
   flag.IntVar(&RefreshLocalState, "refresh", 5, "refresh local state every X seconds")
   flag.BoolVar(&notReadyWithoutExternal, "notReadyWithoutExternal", true, "not ready without external explorer answer")
+
+  flag.StringVar(&rpcUser, "rpcUser", "usr", "valid only for zec")
+  flag.StringVar(&rpcPassword, "rpcPassword", "pwd", "valid only for zec")
   flag.Parse()
   
   log.Printf(`WorkingMode: %s`, WorkingMode)
@@ -66,7 +71,6 @@ func main() {
       } else {
         w.WriteHeader(500)
       }
-      
       // write response body
       fmt.Fprintf(w, message)
     })
@@ -134,6 +138,8 @@ func main() {
           PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl, "/getheight")
         case "xmr":
           PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl, "/get_height")
+        case "zec":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromZecRpc(LocalNodeRpcUrl, rpcUser, rpcPassword)
       }
       
       if errorString != "" {
@@ -235,6 +241,17 @@ func main() {
         time.Sleep(time.Second)
         
         PossibleRemoteLastBlock, errorString = external.GetXmrHeightFromMoneroBlocsInfo()
+        if errorString != "" {
+          log.Printf(`RemoteHeight request error: %s`, errorString)
+        } else {
+          RemoteLastBlock = PossibleRemoteLastBlock
+          log.Println(`GetXmrHeightFromMoneroBlocsInfo:`, RemoteLastBlock)
+        }
+      
+      case "zec":
+        time.Sleep(time.Second)
+        
+        PossibleRemoteLastBlock, errorString = external.GetHeightFromExplorerZchaInAnswer()
         if errorString != "" {
           log.Printf(`RemoteHeight request error: %s`, errorString)
         } else {
