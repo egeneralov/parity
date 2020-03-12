@@ -134,6 +134,8 @@ func main() {
           PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
         case "parity-etc":
           PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
+        case "etz":
+          PossibleLocalLastBlock, errorString = external.GetHeightFromParityRpc(LocalNodeRpcUrl)
         case "xmc":
           PossibleLocalLastBlock, errorString = external.GetHeightFromMoneroRpc(LocalNodeRpcUrl, "/getheight")
         case "xmr":
@@ -223,6 +225,17 @@ func main() {
         } else {
           RemoteLastBlock = PossibleRemoteLastBlock
           log.Println(`GetEtcHeightFromGastrackerIo:`, RemoteLastBlock)
+        }
+      
+      case "etz":
+        time.Sleep(time.Second)
+        
+        PossibleRemoteLastBlock, errorString = external.GetEthHeightFromEtzscanCom()
+        if errorString != "" {
+          log.Printf(`RemoteHeight request error: %s`, errorString)
+        } else {
+          RemoteLastBlock = PossibleRemoteLastBlock
+          log.Println(`GetEthHeightFromEtzscanCom:`, RemoteLastBlock)
         }
       
       case "xmc":
