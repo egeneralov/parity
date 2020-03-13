@@ -5,12 +5,7 @@ import (
   "net/http"
   "io/ioutil"
   "bytes"
-//   "strings"
-//   "net/url"
-//   "strconv"
   "encoding/json"
-//   "github.com/gorilla/websocket"
-//   "github.com/antchfx/htmlquery"
 )
 
 
@@ -45,10 +40,8 @@ func GetEthHeightFromEtzscanCom () (int, string) {
   
   req, err := http.NewRequest("POST", "https://etzscan.com/data", payloadReader)
   if err != nil {
-  	// handle err
     return 0, fmt.Sprintf(`error: http.NewRequest: '%s'`, err)
   }
-//   req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:75.0) Gecko/20100101 Firefox/75.0")
   req.Header.Set("Accept", "application/json, text/plain, */*")
   req.Header.Set("Accept-Language", "ru,en-US;q=0.7,en;q=0.3")
   req.Header.Set("Content-Type", "application/json;charset=utf-8")
@@ -70,57 +63,11 @@ func GetEthHeightFromEtzscanCom () (int, string) {
   if err != nil {
     return 0, fmt.Sprintf(`error: ioutil.ReadAll(resp.Body): '%s'`, err)
   }
-/*
-  
-  doc, err := htmlquery.Parse(strings.NewReader(string(body)))
-  if err != nil {
-    return 0, fmt.Sprintf(`error: GetEthHeightFromEtzscanCom: htmlquery.Parse err: '%s'`, err)
-  }
-
-  list, err := htmlquery.QueryAll(doc, `//span[@id="lastblock"]`)
-  if err != nil {
-    return 0, fmt.Sprintf(`error: GetEthHeightFromEtzscanCom: htmlquery.QueryAll err: '%s'`, err)
-  }
-  
-  var str string
-  for _, n := range list { str = htmlquery.InnerText(n) }
-  
-  LastEtherBlock, err := strconv.Atoi(str)
-  if err != nil {
-    return 0, fmt.Sprintf(`error: GetEthHeightFromEtzscanCom: strconv.Atoi err: '%s'`, err)
-  }
-  
-*/
   
   var v ETZAnswer
   err = json.Unmarshal(body, &v)
   if err != nil {
     return 0, fmt.Sprintf(`error: GetHeightFromParityRpc: json.Unmarshal, err: '%s'`, err)
   }
-/*
-  mm := v.(map[string]interface{})
-  vvv := fmt.Sprintf(`%s`, mm["result"])
-  vvvv := hex2int(vvv)
-  
-*/
   return v.BlockHeight, ""
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
